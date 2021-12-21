@@ -1,26 +1,53 @@
 import React from 'react';
 import Head from 'next/head';
-import { AppBar, Container, Link, Toolbar, Typography} from '@material-ui/core';
+import { AppBar, Container, CssBaseline, Link, ThemeProvider, Toolbar, Typography,createMuiTheme} from '@material-ui/core';
 import useStyles from '../utils/styles';
 import NextLink from  'next/link';
 
 
-export default function Layout({title,children}) {
+export default function Layout({title,description,children}) {
+    const theme = createMuiTheme({
+        typography: {
+            h1:{
+                fontSize:'1.6rem',
+                fontWeight:400,
+                margin:'1rem 0',
+            },
+            h2:{
+                fontSize:'1.4rem',
+                fontWeight:400,
+                margin:'1rem 0',
+            },
+        },
+        palette:{
+            type:'light',
+            primary:{
+                main:'#f0c000',
+
+            },
+            secondary:{
+                main:'#208080'
+            },
+        },
+    });
     const classes = useStyles();
     return (
         <div>
             <Head>
-                <title>Next-Amazona</title>
+                <title>{title ? `${title} -Next-Rafael` : 'E-Shop'}</title>
+                {description && <meta name='description' content={description}></meta>}
              
 
             </Head>
+            <ThemeProvider  theme={theme}>
+                <CssBaseline/>    
             <AppBar position = 'static' className= {classes.navbar}>
                 <Toolbar>
                     <NextLink href='/' passHref>
                         <Link>
                         
                         
-                    <Typography className={classes.brand}> Rafael Dior </Typography>
+                    <Typography className={classes.brand}> Rafael E-Shop </Typography>
                         </Link>
 
 
@@ -43,11 +70,12 @@ export default function Layout({title,children}) {
             </Container>
             <footer className={classes.footer} >
                 <Typography>
-                    All rights reserved. Next Rafael Dior
+                    All rights reserved. Next Rafael E-Shop
                 </Typography>
 
 
             </footer>
+            </ThemeProvider>
         </div>
     )
 }
