@@ -1,4 +1,4 @@
-import { Grid, Link, Select,MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core';
+import { Grid, Link, Select,MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button } from '@material-ui/core';
 import React,{useContext} from 'react'
 import Layout from '../components/Layout';
 import { Store } from '../utils/Store';
@@ -24,11 +24,13 @@ export default function CartScreen() {
                       <TableContainer>
                           <Table>
                               <TableHead>
-                                  <TableRow>Image</TableRow>
-                                  <TableRow>Name</TableRow>
-                                  <TableRow align='right'>Quantity</TableRow>
-                                  <TableRow align='right'>Price</TableRow>
-                                  <TableRow align='right'>Action</TableRow>
+                                 <TableRow>
+                                 <TableCell>Image</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell align="right">Quantity</TableCell>
+                    <TableCell align="right">Price</TableCell>
+                    <TableCell align="right">Action</TableCell>
+                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                   {cartItems.map((item) =>(
@@ -48,7 +50,7 @@ export default function CartScreen() {
                                                   </Link>
                                               </NextLink>
                                           </TableCell>
-                                          <TableCell>
+                                          <TableCell align='right'>
                                               <Select value={item.quantity}>
                                                   {[...Array(item.countInStock).keys()].map((x) => (
                                                   <MenuItem key={x+1} value={x+1}>
@@ -56,6 +58,12 @@ export default function CartScreen() {
                                                   </MenuItem>
                                                   ))}
                                               </Select>
+                                          </TableCell>
+                                          <TableCell align='right'>
+                                              ${item.price}
+                                          </TableCell>
+                                          <TableCell align='right'>
+                                              <Button variant ='contained' color='secondary'>X</Button>
                                           </TableCell>
                                       </TableRow>
                                   ))}
