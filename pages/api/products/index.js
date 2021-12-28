@@ -11,6 +11,6 @@ handler.get(async(req,res) =>{
     await db.disconnect();
     
     res.send(products);
-})
+});
 
 export default handler;
