@@ -1,102 +1,146 @@
-import { Button, Link, List, ListItem, TextField, Typography } from '@material-ui/core';
-import NextLink from 'next/link';
-import React,{useContext, useEffect, useState} from 'react';
-import Layout from '../components/Layout';
-import useStyles from '../utils/styles';
-import axios from 'axios';
-import { Store } from '../utils/Store';
-import { useRouter } from 'next/router';
-import Cookies from 'js-cookie';
-
-
-
-
-
-
-
+import {
+  Button,
+  Link,
+  List,
+  ListItem,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import NextLink from "next/link";
+import React, { useContext, useEffect } from "react";
+import Layout from "../components/Layout";
+import useStyles from "../utils/styles";
+import axios from "axios";
+import { Store } from "../utils/Store";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
+import { Controller, useForm } from "react-hook-form";
+import { useSnackbar } from "notistack";
 
 export default function Login() {
-    const router = useRouter();
-    const {redirect} = router.query; // login?redirect=/shipping
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+  const {enqueueSnackbar,closeSnackbar} =useSnackbar();
+  const router = useRouter();
+  const { redirect } = router.query; // login?redirect=/shipping
 
-    const {state,dispatch} = useContext(Store);
-    const {userInfo} = state;
-    useEffect (() =>{
-        if(userInfo) {
-            router.push('/');
-
-        }
-    }, []);
-    const [email,setEmail] = useState('');
-    const [password,setPassword] = useState('');
-    const classes = useStyles();
-    const submitHandler = async (e) => {
-        e.preventDefault();
-        try{
-        const {data} = await axios.post('/api/users/login',{
-            email,
-            password,
-        });
-        dispatch({type:'USER_LOGIN',payload:data});
-        Cookies.set('userInfo',JSON.stringify(data));
-        router.push(redirect || '/');
-       
-    } catch (err) {
-        alert(err.response.data ? err.response.data.message :err.message);
+  const { state, dispatch } = useContext(Store);
+  const { userInfo } = state;
+  useEffect(() => {
+    if (userInfo) {
+      router.push("/");
     }
+  }, []);
+  
+  const classes = useStyles();
+  const submitHandler = async ({email,password}) => {
+    closeSnackbar();
+    try {
+      const { data } = await axios.post("/api/users/login", {
+        email,
+        password,
+      });
+      dispatch({ type: "USER_LOGIN", payload: data });
+      Cookies.set("userInfo", JSON.stringify(data));
+      router.push(redirect || "/");
+    } catch (err) {
+      enqueueSnackbar(err.response.data ? err.response.data.message : err.message,
+        {variant:'error'}
+        );
+    
+    }
+  };
+  return (
+    <div>
+      <Layout title="login">
+        <form onSubmit={handleSubmit(submitHandler)} className={classes.form}>
+          <Typography component='h1' variant="h1">
+            Login
+            </Typography>
 
-    };
-    return (
-        <div>
-            <Layout title = 'login'>
-                <form onSubmit={submitHandler} className={classes.form}>
-                    <Typography>
-                        Login
-                    </Typography>
+          <List>
+            <ListItem>
+              <Controller
+                name="email"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: true,
+                  pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                }}
+                render={({ field }) => (
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="email"
+                    label="Email"
+                    inputProps={{ type: "email" }}
+                    error={Boolean(errors.email)}
+                    helperText=
+                    {errors.email
+                      ? errors.email.type==='pattern'   
+                      ?'Email is not valid'
+                      :'Email is required'
+                      :''     
+                    }          
+                      {...field}
+                      ></TextField>
+                )}
+              ></Controller>
+            </ListItem>
 
-                    <List>
-                        <ListItem>
-                            <TextField variant='outlined'
-                            fullWidth
-                            id='email'
-                            label='Email'
-                            inputProps={{type:'email'}}
-                    onChange = {(e) => setEmail(e.target.value)}>
-                                
+            <ListItem>
+            <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: true,
+                 minLength:6,
+                }}
+                render={({ field }) => (
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="password"
+                    label="Password"
+                    inputProps={{ type: "password" }}
+                    error={Boolean(errors.password)}
+                    helperText=
+                    {errors.password
+                      ? errors.password.type==='minLength'   
+                      ?'Password is length is more than 5'
+                      :'Password is required'
+                      :''     
+                    }          
+                      {...field}
+                      ></TextField>
+                )}
+              ></Controller>
+            </ListItem>
 
-                            </TextField>
-                        </ListItem>
-
-                        <ListItem>
-                            <TextField variant='outlined'
-                            fullWidth
-                            id='password'
-                            label='password'
-                            inputProps={{type:'password'}}
-                            onChange = {(e) => setPassword(e.target.value)}>
-
-                            </TextField>
-                        </ListItem>
-
-                        <ListItem>
-                           <Button variant='contained' type='submit'
-                           fullWidth
-                           color='primary'
-                            >Login</Button>
-                        </ListItem>
-                        <ListItem>
-
-                            Don&apos;t  have an account? &nbsp; <NextLink href='/register' passHref>
-                                <Link>
-                                Register
-                                </Link>
-                            </NextLink>
-                        </ListItem>
-                    </List>
-                </form>
-
-            </Layout>
-        </div>
-    )
+            <ListItem>
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                color="primary"
+              >
+                Login
+              </Button>
+            </ListItem>
+            <ListItem>
+              Don&apos;t have an account? &nbsp;{" "}
+              <NextLink href={`/register?redirect=${redirect || "/"}`}>
+                <Link>Register</Link>
+              </NextLink>
+            </ListItem>
+          </List>
+        </form>
+      </Layout>
+    </div>
+  );
 }
-
