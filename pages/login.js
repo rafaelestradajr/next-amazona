@@ -48,8 +48,7 @@ export default function Login() {
       router.push(redirect || "/");
     } catch (err) {
       enqueueSnackbar(err.response.data ? err.response.data.message : err.message,
-        {variant:'error'}
-        );
+        {variant:'error'});
     
     }
   };
@@ -112,7 +111,7 @@ export default function Login() {
                     helperText=
                     {errors.password
                       ? errors.password.type==='minLength'   
-                      ?'Password is length is more than 5'
+                      ?'Password length is more than 5'
                       :'Password is required'
                       :''     
                     }          
