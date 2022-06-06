@@ -12,7 +12,8 @@ import { useRouter } from 'next/router';
      const router = useRouter();
 
     const {state,dispatch} = useContext(Store);
-    const {cart:{cartItems}} =state;
+    const {cart:{cartItems},
+} =state;
 
     const updateCartHandler = async (item,quantity) => {
         const {data} = await axios.get(`/api/products/${item._id}`);
@@ -86,9 +87,9 @@ import { useRouter } from 'next/router';
                                                   ))}
                                               </Select>
                                           </TableCell>
-                                          <TableCell align='right'>
-                                              ${item.price}
-                                          </TableCell>
+                                          <TableCell align='right'> ${item.price} </TableCell>
+                                             
+                                         
                                           <TableCell align='right'>
                                               <Button variant ='contained'
                                               color='secondary'
